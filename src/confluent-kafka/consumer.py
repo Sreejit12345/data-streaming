@@ -1,6 +1,7 @@
 # reference :https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
 # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html?session_ref=https%3A%2F%2Fwww.google.com%2F&url_ref=https%3A%2F%2Fdocs.confluent.io%2Fkafka-clients%2Fpython%2Fcurrent%2Foverview.html#
 
+# to do this we first created a topic "thermostat_readings" with 6 partitions and produced some messages to it via UI and terminal
 
 import argparse,configparser
 from confluent_kafka import Consumer
