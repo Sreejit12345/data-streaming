@@ -36,7 +36,6 @@ consumer.subscribe([topic])
 #Set subscription to supplied list of topics.
 
 
-
 # remember the message reads will be incremental from offsets
 
 
