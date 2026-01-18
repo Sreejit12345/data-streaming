@@ -5,6 +5,8 @@
 # we also added a schema to the value of the message , so we need a deserializer to decode it
 # we used a json schema so we will use a json deserializer
 
+# if i have to consumer messages with schema the producer must have produced messages with schema too
+
 '''
 # Basic installation
 pip install confluent-kafka
