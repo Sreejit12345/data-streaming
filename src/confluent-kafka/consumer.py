@@ -8,8 +8,10 @@ from confluent_kafka import Consumer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file')  #means the 1st positional file name will be the path for config file (args.config_file)
-args = parser.parse_args()
+args = parser.parse_args()  #args contains the parsed arguments, args.config_file gives the config file path
 
+
+# now we read the ini file to get the consumer configuration
 
 config = configparser.ConfigParser()
 
