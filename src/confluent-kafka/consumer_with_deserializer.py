@@ -70,7 +70,7 @@ consumer.subscribe([topic])
 #Set subscription to supplied list of topics.
 
 
-# remember the message reads will be incremental from offsets
+# remember the message reads will be incremental from offsets- in case any error occurs to deserialize a message, it skips to next message
 
 
 
