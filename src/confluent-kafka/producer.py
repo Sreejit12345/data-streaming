@@ -3,6 +3,7 @@
 
 # to do this we first created a topic "thermostat_readings" with 6 partitions
 
+# remeber this produces a basic message without any schema, so the consumer must read it as is without any deserializer
 
 
 
