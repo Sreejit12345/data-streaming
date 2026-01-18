@@ -1,7 +1,7 @@
 # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html?session_ref=https%3A%2F%2Fwww.google.com%2F&url_ref=https%3A%2F%2Fdocs.confluent.io%2Fkafka-clients%2Fpython%2Fcurrent%2Foverview.html#pythonclient-producer
 
 
-# to do this we first created a topic "thermostat_readings" with 6 partitions
+# to do this we first created a topic "thermostat_readings" with 6 partitions, along with a schema in schema registry
 
 # this produces messages with schema, so the consumer must have a deserializer to read it
 
