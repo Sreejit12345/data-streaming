@@ -30,6 +30,18 @@ def create_random_message():
 
     return message
 
+def on_delivery_callback(err, event):
+
+    '''
+    This is called once for each message produced to indicate delivery result.
+    '''
+
+    if err:
+        print(f'Produce to topic {event.topic()} failed for event: {event.key()}')
+    else:
+        val = event.value().decode('utf8')
+        print(f'{val} sent to partition {event.partition()}.')
+
 
 
 parser = argparse.ArgumentParser()
@@ -66,7 +78,7 @@ while(msg_count<num_messages):
 
     print(f'producing message: {message}')
 
-    producer.produce(topic, value=json.dumps(message), key=str(message['sensor_id']))   #produces message to topic, value must be string or bytes
+    producer.produce(topic, value=json.dumps(message), key=str(message['sensor_id']), on_delivery=on_delivery_callback)   #produces message to topic, value must be string or bytes
 
     producer.flush()   #waits all messages in the Producer queue to be delivered.
 
