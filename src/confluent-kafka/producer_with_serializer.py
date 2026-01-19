@@ -65,7 +65,9 @@ schema_registry_conf['basic.auth.user.info']=config['schema-registry']['basic.au
 
 scl=SchemaRegistryClient(schema_registry_conf)
 
-# we get schema_id and subject_name from schema registry portal. This returns the schema object
+# we get schema_id and subject_name from schema registry portal. This returns the schema object.abs
+# we can also define a string schema here instead of getting from schema registry
+
 schema_obj=scl.get_schema(schema_id='100003',subject_name='thermostat_readings-value')  #this gets the schema object
 
 serializer=JSONSerializer(schema_str=schema_obj.schema_str,schema_registry_client=scl)
