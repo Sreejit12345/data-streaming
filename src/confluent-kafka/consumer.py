@@ -8,8 +8,10 @@ from confluent_kafka import Consumer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file')  #means the 1st positional file name will be the path for config file (args.config_file)
-args = parser.parse_args()
+args = parser.parse_args()  #args contains the parsed arguments, args.config_file gives the config file path
 
+
+# now we read the ini file to get the consumer configuration
 
 config = configparser.ConfigParser()
 
@@ -24,14 +26,30 @@ configuration['sasl.username'] = config['default']['sasl.username']
 configuration['sasl.password'] = config['default']['sasl.password']
 configuration['group.id'] = config['consumer']['group.id']
 configuration['auto.offset.reset'] = config['consumer']['auto.offset.reset']
+#configuration['enable.auto.commit'] = False   -- if false we need to manually commit
 
 print(configuration)
+
+
+
+def assignment_callback(consumer, partitions):
+
+    '''
+    
+    callback called on successful assignment of partitions to the consumer, also if we add more consumers 
+    to the same group this callback is called to reassign partitions among all consumers in the group.
+
+    '''
+    for p in partitions:
+        print(f'Assigned to {p.topic}, partition {p.partition}')
+
+
 
 consumer = Consumer(configuration)
 
 
 topic = "thermostat_readings"
-consumer.subscribe([topic])
+consumer.subscribe([topic],on_assign=assignment_callback)  #this is where the assignment of partitions happens for this consumer instance
 
 #Set subscription to supplied list of topics.
 
@@ -65,6 +83,7 @@ try:
         
         else:
             print("Consumed event from topic {topic}: key = {key} value = {value}".format(topic=msg.topic(), key=msg.key(), value=msg.value()))
+            #consumer.commit(event)
 
 except KeyboardInterrupt:
     pass

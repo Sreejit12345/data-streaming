@@ -5,6 +5,8 @@
 # we also added a schema to the value of the message , so we need a deserializer to decode it
 # we used a json schema so we will use a json deserializer
 
+# if i have to consumer messages with schema the producer must have produced messages with schema too
+
 '''
 # Basic installation
 pip install confluent-kafka
@@ -28,9 +30,10 @@ from confluent_kafka.serialization import SerializationContext,MessageField
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file')  #means the 1st positional file name will be the path for config file (args.config_file)
-args = parser.parse_args()
+args = parser.parse_args() #args contains the parsed arguments, args.config_file gives the config file path
 
 
+# now we read the ini file to get the consumer configuration
 config = configparser.ConfigParser()
 
 config.read(args.config_file)
@@ -50,15 +53,17 @@ configuration['auto.offset.reset'] = config['consumer']['auto.offset.reset']
 
 consumer = Consumer(configuration)
 
+# passsing the schema registry configuration, this key is different from consumer configuration and is set in portal.
 schema_registry_conf={}
-
 schema_registry_conf['url']=config['schema-registry']['url']
 schema_registry_conf['basic.auth.user.info']=config['schema-registry']['basic.auth.user.info']
 
 scl=SchemaRegistryClient(schema_registry_conf)
 
+# we get schema_id and subject_name from schema registry portal. This returns the schema object
 schema_obj=scl.get_schema(schema_id='100003',subject_name='thermostat_readings-value')  #this gets the schema object
 
+# we create a json deserializer object
 j_cl=JSONDeserializer(schema_registry_client =scl,schema_str=schema_obj)
 
 
@@ -67,7 +72,7 @@ consumer.subscribe([topic])
 #Set subscription to supplied list of topics.
 
 
-# remember the message reads will be incremental from offsets
+# remember the message reads will be incremental from offsets- in case any error occurs to deserialize a message, it skips to next message
 
 
 
