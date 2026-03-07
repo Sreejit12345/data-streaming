@@ -38,7 +38,8 @@ select * from Users order by proc_time;
 
 
 -- Aggregate 
-Produces an update stream as result.
+--Produces an update stream as result. Remeber here the state is mainitained forever
+--SET 'table.exec.state.ttl' = '1 h';
 
 select count(*), country
 from Users group by country
