@@ -37,6 +37,35 @@ select * from
 
 
 
+-- write results back to a csv sink (append only)
+
+CREATE TABLE csv_sink (
+  order_id STRING,
+  amount DOUBLE,
+  rn BIGINT
+) WITH (
+  'connector' = 'filesystem',
+  'path' = '/tmp/top_order.csv',
+  'format' = 'csv'
+);
+
+insert into csv_sink
+select order_id,amount,rn from
+ (
+ select *, row_number() over(order by amount desc) rn from orders
+) q
+ where rn<=10;
+
+docker exec -it setup-taskmanager-1 ls /tmp/top_order.csv ; -- to see the file that was written to sink , sopt file name from here
+
+docker exec -it setup-taskmanager-1 cat /tmp/top_order.csv/part-509aaac2-1e4f-42b0-939a-8b4874a8d44f-task-0-file-0
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 -- If we change to streaming - the behavior changes and it constantky updates the rn as new records are streamed.
 
 -- top 1 order
@@ -67,8 +96,6 @@ select * from
 
 
 -- the 1st order definition keeps changing as new rows get added.
-
-
 
 
 

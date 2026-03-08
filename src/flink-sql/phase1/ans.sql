@@ -39,7 +39,7 @@ select * from Users order by proc_time;
 
 -- Aggregate 
 --Produces an update stream as result. Remeber here the state is mainitained forever
---SET 'table.exec.state.ttl' = '1 h';
+--SET 'table.exec.state.ttl' = '1 h';  reqd to clear state- if state is cleared old keys appear as new keys and we dont get full aggregation
 
 select count(*), country
 from Users group by country
