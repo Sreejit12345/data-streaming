@@ -27,10 +27,10 @@ docker compose down -v
 Phase 0  : Environment Setup
 Phase 1  : SQL Fundamentals
 Phase 2  : Batch Processing
-Phase 3  : Streaming Fundamentals (stateless processing)
-Phase 4  : Kafka Integration (stateful processing with complex data types)
+Phase 3  : Streaming Fundamentals (stateless processing pipeline)
+Phase 4  : Kafka Integration (stateful processing pipeline with complex data types)
 Phase 5  : Event Time/ Procesing Time & Watermarks
-Phase 6  : Windowing
+Phase 6  : Windowing (tumbling window /hop or sliding window /session window / cumlative window / named over window /window + top N)
 Phase 7  : Joins
 Phase 8  : Advanced SQL Patterns
 Phase 9  : Upsert & Changelog Streams
