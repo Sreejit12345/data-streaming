@@ -90,3 +90,66 @@ group by window_start,window_end,window_time;
 
 
 example is in ipad note
+
+
+-- named over window  similar to window functions
+
+'''
+OVER aggregates compute an aggregated value for every input row over a range of ordered rows.
+ In contrast to GROUP BY aggregates, OVER aggregates do not reduce the number of result rows to a single row for every group.
+ Instead OVER aggregates produce an aggregated value for every input row.
+
+'''
+
+--  Flink currently supports OVER windows that are defined with an ascending time attribute or ascending non-time attribute
+--(the primary order should be asc on time attribute ). Additional orderings are not supported(exception is topN)
+-- Flink only supports CURRENT ROW as the upper boundary.
+
+
+
+-- so an event is only emitted in order by when the watermark  has crossed the event_time
+
+-- Eg: an event at 10:00:01 is only emitted in "order by" when the max event time reaches 10:00:01+30 sec= 10:00:31  and the watermark reaches 10:00:01.
+--An event with timestamp T is emitted only when the watermark ≥ T.
+
+-- previus 2 order amts and current order amt
+
+select customer_id,order_id,order_amount,lag(order_amount,1) over(partition by customer_id order by order_timestamp) as prev_order_amt,
+lag(order_amount,2) over(partition by customer_id order by order_timestamp) as prev_order_amt
+from orders
+where customer_id='cust-095';
+
+
+
+-- same query cna be wriiten as  (benifit we get is :- no need to write again and again inline)
+
+
+select customer_id,order_id,order_amount,lag(order_amount,1) over w as prev_order_amt,
+lag(order_amount,2) over w as prev_order_amt
+from orders
+where customer_id='cust-095'
+WINDOW w as(
+    partition by customer_id order by order_timestamp
+)
+
+
+-- Top N -- find customers with highest spending in last 10 minutes 
+
+-- remeber we have to have a filter on row_number, without that it fails .
+
+with cte as(
+select 
+window_start,window_end,sum(order_amount) as revenue,window_time,customer_id
+FROM TABLE(
+TUMBLE(DATA=> TABLE orders,
+TIMECOL=> DESCRIPTOR(order_timestamp),
+SIZE=> INTERVAL '30' SECOND)
+) 
+group by window_start,window_end,window_time,customer_id
+)
+select window_start,window_end,customer_id,revenue,rn
+from 
+(
+select *, row_number() over(partition by window_start,window_end order by revenue desc) rn from cte
+) q 
+where rn<=3;
