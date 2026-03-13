@@ -17,15 +17,9 @@ Only emits a row when a match exists.
 
 Append-only output if both inputs are append-only. If table is updating- update stream produced and all recs updated.
 
-Duplicates: If multiple rows in either stream match the same key, Flink emits a row for each combination, but does not update previous rows.
+Duplicates: If multiple rows in either stream match the same key, Flink emits a row for each combination, but does not update previous rows. (for append stream)
 
 State: stores all historical rows to match future arrivals → can grow unbounded.
-
-Example:
-
-Orders	Payments	Output
-o1	p10	o1,p10
-	p11	o1,p11
 
 No retractions happen.
 
@@ -43,11 +37,7 @@ Emits the proper join.
 
 Output is always a retract/update stream, even if inputs are append-only.
 
-Example:
 
-Orders	Payments	Output (provisional / final)
-o1	none	(o1, NULL)
-	p10	retract (o1, NULL), emit (o1, p10)
 3️⃣ RIGHT JOIN (no watermark)
 
 Symmetric to LEFT JOIN, but for right side.
@@ -244,4 +234,54 @@ COMPLETED
 COMPLETED
 3/3	2026-03-11 23:13:56.542	2026-03-11 23:13:58.660	2s 118ms	16.5 KB	16.5 KB	41 B (0 B)
 
+'''
 
+
+-- temporal join (fact (usually append only) and versioned dim (usually updating) join)
+-- dim table is versioned automatically and needs watermarks
+-- for each fact table event time, it checks for latst valid dim row present.
+-- buffers join results and does not emit immediately
+
+-- when fact table watermark pass a certain point, it can clear state for irrelevant dimensions .
+
+'''
+
+1. The "Join Delay" (The Barrier Rule)
+This is the most common point of confusion.
+A temporal join waits for the Dimension watermark.
+Scenario: An order arrives at 10:00:05 
+The Logic: Flink wants to join this with the version of the dimension valid at 10:00:05.
+
+The Problem: If the Dimension watermark is only at 10:00:00, Flink cannot be sure that a dimension update for 10:00:04 isnt still traveling through the network.
+
+
+The Result: Flink buffers the order in state. It will not emit the join result until the dim watermark>=fact event time
+
+If your Dimension stream is slow or idle, your Fact stream will appear to "hang" and not produce any output because its waiting for the Dimension watermark 
+to "prove" the timeline is complete.
+
+
+ State Cleanup (The "Truncation" Rule)In a versioned dimension table (like versioned_payments),
+  Flink stores multiple versions for every key (e.g., order_id).
+
+How it purges: Flink calculates the Combined Watermark ($\min(W_{fact}, W_{dim})$).
+
+The Logic: If the Combined Watermark is at 11:00:00, Flink knows it will never see a Fact with a timestamp earlier than that.
+
+The Cleanup: Flink looks at all the stored versions of a key.
+
+ It keeps the version that is currently valid for 11:00:00, and deletes all versions older than that.
+ 
+ Impact: If either your Fact or Dim watermark gets stuck, Flink can never move the Combined Watermark forward.
+ 
+  This causes the "State Explosion" where your checkpoint size grows linearly until the job crashes.
+  
+  3. Handling Late Data (The "Drop" Rule)Temporal joins are strict about history.
+  
+  Scenario: The Combined Watermark of the join is at 10:30:00.The Event: A "Late Fact" (Order) arrives with a timestamp of 10:25:00.
+  
+  The Result: This record is dropped (or sent to a side-output if configured).
+  
+  Why? Because Flink has already purged the Dimension state for 10:25:00 (per the Truncation Rule above). 
+  
+  It can no longer guarantee a correct historical join, so it ignores the record to maintain data integrity.

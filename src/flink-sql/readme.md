@@ -32,8 +32,3 @@ Phase 4  : Kafka Integration (stateful processing pipeline with complex data typ
 Phase 5  : Event Time/ Procesing Time & Watermarks
 Phase 6  : Windowing (tumbling window /hop or sliding window /session window / cumlative window / named over window /window + top N)
 Phase 7  : Joins
-Phase 8  : Advanced SQL Patterns
-Phase 9  : Upsert & Changelog Streams
-Phase 10 : Performance & Debugging
-Phase 11 : Batch + Stream Unification
-Phase 12 : End-to-End Production Project
