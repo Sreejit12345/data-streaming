@@ -4,6 +4,7 @@ from pyflink.table import EnvironmentSettings, TableEnvironment
 from pyflink.table.expressions import col
 
 #https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/dev/table/tableapi/
+# https://nightlies.apache.org/flink/flink-docs-release-2.2/api/python/reference/pyflink.table/index.html
 
 # 1. create a TableEnvironment
 env_settings = EnvironmentSettings.in_streaming_mode()

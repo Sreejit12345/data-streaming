@@ -2,6 +2,7 @@ from pyflink.table import EnvironmentSettings, TableEnvironment
 from pyflink.table.expressions import col
 
 # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/dev/python/table/intro_to_table_api/
+# https://nightlies.apache.org/flink/flink-docs-release-2.2/api/python/reference/pyflink.table/index.html
 
 
 # 1. create a TableEnvironment

@@ -10,7 +10,7 @@
 #https://hub.docker.com/r/apache/kafka
 # remeber to map container port to host port when running the docker image, e.g. -p 9092:9092 for kafka
 
-
+#https://nightlies.apache.org/flink/flink-docs-release-2.2/api/python/reference/pyflink.table/index.html
 
 from pyflink.table import EnvironmentSettings, TableEnvironment
 from pyflink.table.expressions import col
