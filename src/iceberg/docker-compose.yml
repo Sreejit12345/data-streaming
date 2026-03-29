@@ -1,8 +1,3 @@
-# Spark (compute) + Iceberg (table format) + MinIO (S3 storage)
-
-# https://iceberg.apache.org/spark-quickstart/
-
-
 services:
   spark-iceberg:
     image: tabulario/spark-iceberg
@@ -75,5 +70,3 @@ services:
       "
 networks:
   iceberg_net:
-
-
