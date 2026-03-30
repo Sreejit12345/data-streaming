@@ -132,3 +132,8 @@ SELECT * FROM transactions ORDER BY transaction_id;
 
 SELECT name, type, snapshot_id
 FROM demo.finance.transactions.refs;
+
+
+-- drop branch
+
+ALTER TABLE transactions DROP BRANCH staging;
